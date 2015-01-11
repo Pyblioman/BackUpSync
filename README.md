@@ -4,7 +4,6 @@ Backup and sync commands
 commands:
 
 copydir dir1 dir2
-
 syncdir dir1 dir2
 
 ToDo:
