@@ -4,11 +4,12 @@
 import os
 import shutil
 import sys
+import time
 
 #ordner1 = "/Users/user1/Documents/python/BackUpSync/tmp1"
 #ordner1 = "c:\temp1"
 #ordner2 = "/Users/user1/Documents/python/BackUpSync/tmp2"
-#ordner2 = "c:\temp2"
+#ordner1 = "c:\temp2"
 
 def copyLargeFile(src, dest, buffer_size):
     with open(src, 'rb') as fsrc:
@@ -37,6 +38,40 @@ def copyFile(src1, dest2):
    		except IOError as e:
 			print(src1 + ' Error4: %s' % e.strerror)
 	return 0
+
+def BackUpOrdner(ord1):
+	j=0
+	if ordner1[:len(ordner2)]!=ordner2[:len(ordner1)]:
+		ord2 = ordner2 + ord1[len(ordner1):]
+		if os.path.isdir(ord2)==False:
+			try:
+				os.mkdir(ord2)
+			except OSError, e:
+				print 'Error5: ' + e.strerror + " " + ord2 
+		if os.path.isdir(ord2)==True:
+			for item in os.listdir(ord1):
+				#print item
+				if os.path.isdir(ord1 + slash + item)==False:
+					flg=0
+					try:
+						if os.path.getsize(ord1 + slash + item)!=os.path.getsize(ord2 + slash + item):
+							print "update: " + ord2 + slash + item
+							flg=1
+					except:
+						print "copy: " + ord2 + slash + item
+						flg=1
+					if flg==1:
+						try:
+							j = j + copyFile(ord1 + slash + item, ord2 + slash + item)
+						except:
+							try:
+								if os.path.getsize(ord1 + slash + item)!=os.path.getsize(ord2 + slash + item):
+									j = j + copyFile(ord1 + slash + item, ord2 + slash + item)
+							except:
+								print "Error: " + ord2 + slash + item			
+				else:
+					j=j+CopyOrdner(ord1 + slash + item)
+	return j
 
 def CopyOrdner(ord1):
 	j=0
@@ -113,6 +148,8 @@ def SyncOrdner(ord1):
 							try:
 								if os.path.getsize(ord1 + slash + item)!=os.path.getsize(ord2 + slash + item):
 									j = j + copyFile(ord1 + slash + item, ord2 + slash + item)
+								else:
+									j = j + 1
 							except:
 								print "Error: " + ord2 + slash + item			
 				else:
@@ -133,12 +170,26 @@ if len(sys.argv)==4 and os.path.isdir(sys.argv[2]) and os.path.isdir(sys.argv[3]
 		ordner2=ordner2[:len(ordner2)-1]
 	print befehl + " " + ordner1 + " > " + ordner2 
 	print("wait a moment")
-	if befehl=="dircopy":		
+	if befehl=="fm_dircopy":		
 		print CopyOrdner(ordner1), "files are copied"
-	elif befehl=="dirsync":
+	elif befehl=="fm_dirsync":
 		print SyncOrdner(ordner1), "files are synced"
+	elif befehl=="fm_dirbackup":
+		ordner2 = ordner2 + slash + time.strftime("%d%m%Y_%H%M%S") + "_BackUp"
+		print BackUpOrdner(ordner1), "files are BackUped"
+	elif befehl=="fm_lifedirsync":
+		ordner2 = ordner2 + slash + time.strftime("%d%m%Y_%H%M%S") + "_BackUp"
+ 		print BackUpOrdner(ordner1), "files are BackUped"
 	else:
 		print "no command: " + befehl 
 		print "use:"
-		print "dircopy - to tree copy" 
-		print "dirsync - to tree sync, !!! this command does delete all fils and directories at destination, that there are not at source..." 
+		print "fm_dircopy - to copy the tree" 
+		print "fm_dirsync - to sync the tree, !!! this command does delete all fils and directories at destination, that there are not at source..." 
+		print "fm_dirbackup - to backup the tree" 
+		print "fm_lifedirsync - to sync the tree evry 5 Min" 
+else:
+	print "use: Command path1 path2"
+	print "fm_dircopy - to copy the tree" 
+	print "fm_dirsync - to sync the tree, !!! this command does delete all fils and directories at destination, that there are not at source..." 
+	print "fm_dirbackup - to backup the tree. It will make a new subfolder" 
+	print "fm_lifedirsync - to sync the tree evry 5 Min" 
