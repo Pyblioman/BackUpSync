@@ -5,9 +5,9 @@ Backup and sync commands
 
 commands:
 
-- dirsync dir1 dir2
-- dircopy dir1 dir2
-- dirbackup dir1 dir2 (todo)
+- fm_dirsync dir1 dir2
+- fm_dircopy dir1 dir2
+- fm_dirbackup dir1 dir2
 
 '''''''''''''''''''''''''''''''''''''''''''''''''
 
